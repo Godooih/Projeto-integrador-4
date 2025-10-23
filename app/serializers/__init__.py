@@ -4,11 +4,14 @@ from .environment import *
 from .equipment import *
 from .notification import *
 from .task import *
+from .custom_serializer import *
 
 __all__ = [
     'CategorySerializer','CustomUserSerializer',
-    'EnvironmentSerializer','EquipmentSerializer',
-    'NotificationSerializer', 'TaskSerializer', 
-    'TaskStatusSerializer', 'TaskStatusImageSerializer'
+    'EnvironmentSerializer','EquipmentReadSerializer',
+    'EquipmentWriteSerializer','NotificationSerializer',
+    'TaskReadSerializer', 'TaskWriteSerializer', 
+    'TaskStatusSerializer', 'TaskStatusImageSerializer',
+    'ReadWriteSerializer'
 ]
 
