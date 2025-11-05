@@ -2,8 +2,8 @@
 
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from ..models import Task, TaskStatus  # <-- Importe o TaskStatus
-from ..serializers import TaskReadSerializer, TaskWriteSerializer, ReadWriteSerializer
+from .models import Task, TaskStatus  # <-- Importe o TaskStatus
+from .serializers import TaskReadSerializer, TaskWriteSerializer, ReadWriteSerializer
 
 class TaskViewSet(ReadWriteSerializer, viewsets.ModelViewSet):
     """
