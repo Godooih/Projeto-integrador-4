@@ -95,6 +95,8 @@ class TaskStatusView(viewsets.ModelViewSet):
 class TaskStatusImageView(viewsets.ModelViewSet):
     queryset = TaskStatusImage.objects.all()
     serializer_class = TaskStatusImageSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['task_FK']
 
 # --- CORRIGIDO: TaskView ---
 # Precisa herdar de ReadWriteSerializer para que o write_serializer_class funcione!
