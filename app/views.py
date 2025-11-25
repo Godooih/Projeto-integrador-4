@@ -4,6 +4,8 @@ from rest_framework import viewsets
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAuthenticated
+from rest_framework import viewsets, status
+from rest_framework.response import Response
 
 # --- 1. IMPORTS DOS MODELS ---
 from .models import (
@@ -91,6 +93,12 @@ class NotificationView(viewsets.ModelViewSet):
 class TaskStatusView(viewsets.ModelViewSet):
     queryset = TaskStatus.objects.all()
     serializer_class = TaskStatusSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['task_FK']
+
+    def perform_create(self, serializer):
+        # Grava automaticamente o usuário logado como autor da mudança
+        serializer.save(user_FK=self.request.user)
 
 class TaskStatusImageView(viewsets.ModelViewSet):
     queryset = TaskStatusImage.objects.all()
@@ -119,6 +127,7 @@ class TaskView(ReadWriteSerializer, viewsets.ModelViewSet):
                 return Task.objects.all().order_by('-creation_date')
             return Task.objects.filter(creator_FK=user).order_by('-creation_date')
         return Task.objects.none()
+        pass
     
     def perform_create(self, serializer):
         # Esta função só é chamada se o TaskWriteSerializer for válido.
@@ -128,3 +137,36 @@ class TaskView(ReadWriteSerializer, viewsets.ModelViewSet):
             user_FK=self.request.user,
             comment="Chamado criado com sucesso."
         )
+        pass
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        Sobrescreve o método DELETE para adicionar regras de negócio.
+        """
+        task = self.get_object()
+        user = self.request.user
+
+        # REGRA 1: Somente o criador do chamado pode excluí-lo.
+        if task.creator_FK != user:
+            return Response(
+                {"detail": "Você não tem permissão para excluir este chamado."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        # REGRA 2: Verifica o status atual do chamado.
+        # (Buscamos o status mais recente)
+        latest_status_obj = task.TaskStatus_task_FK.order_by('-status_date').first()
+        current_status = latest_status_obj.status if latest_status_obj else 'OPEN' # Default 'OPEN'
+
+        # Defina os status que BLOQUEIAM a exclusão
+        # (Use os nomes exatos que você salva no banco, ex: 'IN_PROGRESS', 'DONE')
+        NON_DELETABLE_STATUSES = ['IN_PROGRESS', 'EM ANDAMENTO', 'DONE', 'CONCLUÍDO']
+
+        if current_status.upper() in NON_DELETABLE_STATUSES:
+            return Response(
+                {"detail": "Não é possível excluir um chamado que já está em andamento ou foi concluído."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Se passou nas regras, exclui o chamado.
+        return super().destroy(request, *args, **kwargs)

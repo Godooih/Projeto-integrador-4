@@ -65,6 +65,7 @@ class EquipmentSearchSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'code']
 
 class TaskStatusSerializer(serializers.ModelSerializer):
+    user_FK = CustomUserSerializer(read_only=True)
     class Meta:
         model = TaskStatus
         fields = '__all__'
