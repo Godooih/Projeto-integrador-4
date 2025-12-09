@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
+
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -27,6 +29,7 @@ DEBUG = True
 
 #permite o backend rodar em qualquer servidor
 ALLOWED_HOSTS = ['*']
+
 
 #qualquer frontend pode chamar o backend
 CORS_ALLOW_ALL_ORIGINS = True
@@ -152,3 +155,9 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20,
 }
+
+# Onde os arquivos ficarão salvos no computador/servidor
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# A URL base para acessar esses arquivos pelo navegador
+MEDIA_URL = '/media/'

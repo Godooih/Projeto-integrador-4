@@ -108,6 +108,7 @@ class TaskReadSerializer(serializers.ModelSerializer):
             'id', 
             'name', 
             'description', 
+            'image',
             'creation_date', 
             'urgency_level',
             'creator_FK',
@@ -169,6 +170,7 @@ class TaskWriteSerializer(serializers.ModelSerializer):
         fields = [
             'name', 
             'description', 
+            'image',
             'suggested_date', 
             'urgency_level', 
             'equipments_FK', 
